@@ -37,15 +37,17 @@ def get_ha_config():
     # Check for token file
     token_paths = [
         Path("/Users/robb/.openclaw/workspace/.secrets/ha-token"),
-        Path("/Users/clay/clawd/.secrets/ha-token"),
         Path.home() / ".secrets" / "ha-token",
     ]
     
     if not ha_token:
         for token_path in token_paths:
-            if token_path.exists():
-                ha_token = token_path.read_text().strip()
-                break
+            try:
+                if token_path.exists():
+                    ha_token = token_path.read_text().strip()
+                    break
+            except PermissionError:
+                continue
     
     if not ha_token:
         print(f"{RED}Error: No HA token found. Set HA_TOKEN env var or create .secrets/ha-token file.{RESET}")
